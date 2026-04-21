@@ -13,12 +13,11 @@ abstract final class S {
   static String get chooseModeHint => AppLocale.isEn
       ? 'The first three modes pull a hidden challenge automatically. Manual input is only in Custom task.'
       : 'Первые три режима сами вытягивают скрытый челлендж. Ручной ввод остаётся только в Custom task.';
-  static String hiddenBadge(int count) =>
-      AppLocale.isEn ? '$count hidden' : '$count скрытых';
+
 
   // Touch screen
   static String get placeFingersPrompt =>
-      AppLocale.isEn ? 'Place 2–6 fingers' : 'Положите 2–6 пальцев';
+      AppLocale.isEn ? 'Place 2–5 fingers' : 'Положите 2–5 пальцев';
   static String get needOneMore =>
       AppLocale.isEn ? 'Need one more player' : 'Нужен ещё один игрок';
   static String get keepFingers =>

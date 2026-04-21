@@ -7,7 +7,8 @@ class GameMode {
     required this.subtitle,
     required this.accentColor,
     required this.icon,
-    required this.hiddenTaskCount,
+    this.badgeText,
+    this.badgeTextEn,
     required this.examples,
     this.titleEn,
     this.subtitleEn,
@@ -22,7 +23,8 @@ class GameMode {
   final String? subtitleEn;
   final Color accentColor;
   final IconData icon;
-  final int hiddenTaskCount;
+  final String? badgeText;
+  final String? badgeTextEn;
   final List<String> examples;
   final List<String>? examplesEn;
   final bool requiresManualTaskInput;

@@ -116,7 +116,7 @@ class _ModeCard extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
-                        if (mode.hiddenTaskCount > 0)
+                        if (mode.badgeText != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -128,7 +128,9 @@ class _ModeCard extends StatelessWidget {
                               border: Border.all(color: AppTheme.stroke),
                             ),
                             child: Text(
-                              S.hiddenBadge(mode.hiddenTaskCount),
+                              isEn && mode.badgeTextEn != null
+                                  ? mode.badgeTextEn!
+                                  : mode.badgeText!,
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,

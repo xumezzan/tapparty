@@ -101,22 +101,34 @@ class _LangToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String current = AppLocale.notifier.value;
-    return Container(
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppTheme.stroke),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          _LangPill(label: 'RU', selected: current == 'ru', onTap: () => AppLocale.set('ru')),
-          const SizedBox(width: 4),
-          _LangPill(label: 'EN', selected: current == 'en', onTap: () => AppLocale.set('en')),
-        ],
-      ),
+    return ValueListenableBuilder<String>(
+      valueListenable: AppLocale.notifier,
+      builder: (BuildContext context, String current, Widget? child) {
+        return Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: AppTheme.stroke),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _LangPill(
+                label: 'RU',
+                selected: current == 'ru',
+                onTap: () => AppLocale.set('ru'),
+              ),
+              const SizedBox(width: 4),
+              _LangPill(
+                label: 'EN',
+                selected: current == 'en',
+                onTap: () => AppLocale.set('en'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

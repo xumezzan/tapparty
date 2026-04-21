@@ -48,7 +48,7 @@ class _TouchPoint {
 class _TouchScreenState extends State<TouchScreen>
     with SingleTickerProviderStateMixin {
   static const int _minPlayers = 2;
-  static const int _maxPlayers = 6;
+  static const int _maxPlayers = 5;
   static const double _touchSize = 78;
   static const Duration _holdDuration = Duration(milliseconds: 1500);
   static const Duration _revealDelay = Duration(milliseconds: 900);
@@ -59,7 +59,6 @@ class _TouchScreenState extends State<TouchScreen>
     AppTheme.cyan,
     AppTheme.gold,
     AppTheme.violet,
-    AppTheme.orange,
   ];
 
   final Random _random = Random();
@@ -514,11 +513,6 @@ class _TouchHud extends StatelessWidget {
                       backgroundColor: mode.accentColor,
                       foregroundColor: AppTheme.background,
                     ),
-                    if (isHiddenTask)
-                      _HudChip(
-                        label: S.secret,
-                        icon: Icons.lock_outline_rounded,
-                      ),
                     _HudChip(
                       label: '$playerCount/$maxPlayers',
                       icon: Icons.touch_app_rounded,
