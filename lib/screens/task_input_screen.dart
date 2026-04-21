@@ -1,4 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:tapparty/l10n/app_locale.dart';
+import 'package:tapparty/l10n/strings.dart';
 import 'package:tapparty/models/game_mode.dart';
 import 'package:tapparty/screens/touch_screen.dart';
 import 'package:tapparty/theme/app_theme.dart';
@@ -16,11 +20,18 @@ class TaskInputScreen extends StatefulWidget {
 
 class _TaskInputScreenState extends State<TaskInputScreen> {
   late final TextEditingController _controller;
+  final Random _random = Random();
+
+  List<String> get _examples {
+    final bool isEn = AppLocale.isEn;
+    final List<String>? en = widget.mode.examplesEn;
+    return isEn && en != null ? en : widget.mode.examples;
+  }
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.mode.examples.first);
+    _controller = TextEditingController();
     _controller.addListener(_onChanged);
   }
 
@@ -36,9 +47,27 @@ class _TaskInputScreenState extends State<TaskInputScreen> {
     setState(() {});
   }
 
+  void _pickRandom() {
+    final List<String> examples = _examples;
+    final String current = _controller.text.trim();
+    String picked;
+    if (examples.length > 1) {
+      String candidate;
+      do {
+        candidate = examples[_random.nextInt(examples.length)];
+      } while (candidate == current && examples.length > 1);
+      picked = candidate;
+    } else {
+      picked = examples.first;
+    }
+    _controller.text = picked;
+    _controller.selection = TextSelection.collapsed(offset: picked.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     final String trimmedTask = _controller.text.trim();
+    final List<String> examples = _examples;
 
     return PartyScaffold(
       child: Column(
@@ -53,12 +82,12 @@ class _TaskInputScreenState extends State<TaskInputScreen> {
           ),
           const SizedBox(height: 18),
           Text(
-            'Своё задание',
+            S.customTaskTitle,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Это вторичный режим. Используй его, если хочешь задать свой сценарий вручную вместо скрытых челленджей.',
+            S.customTaskHint,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 24),
@@ -67,24 +96,59 @@ class _TaskInputScreenState extends State<TaskInputScreen> {
             maxLines: 5,
             minLines: 5,
             style: Theme.of(context).textTheme.bodyLarge,
-            decoration: const InputDecoration(
-              hintText:
-                  'Например: Кто-то поёт без музыки, говорит тост или идёт за снеками.',
-            ),
+            decoration: InputDecoration(hintText: S.inputPlaceholder),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Быстрые примеры',
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontSize: 13,
-              color: AppTheme.textMuted,
-            ),
+          Row(
+            children: <Widget>[
+              Text(
+                S.quickExamples,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontSize: 13,
+                  color: AppTheme.textMuted,
+                ),
+              ),
+              const SizedBox(width: 10),
+              GestureDetector(
+                onTap: _pickRandom,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: AppTheme.stroke),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.shuffle_rounded,
+                        size: 13,
+                        color: AppTheme.acid,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        S.randomBtn,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.acid,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: widget.mode.examples.map((String example) {
+            children: examples.map((String example) {
               return ActionChip(
                 backgroundColor: Colors.white.withValues(alpha: 0.06),
                 side: const BorderSide(color: AppTheme.stroke),
@@ -92,13 +156,18 @@ class _TaskInputScreenState extends State<TaskInputScreen> {
                   example,
                   style: const TextStyle(color: AppTheme.textPrimary),
                 ),
-                onPressed: () => _controller.text = example,
+                onPressed: () {
+                  _controller.text = example;
+                  _controller.selection = TextSelection.collapsed(
+                    offset: example.length,
+                  );
+                },
               );
             }).toList(),
           ),
           const Spacer(),
           NeonButton(
-            label: 'Продолжить',
+            label: S.continueBtn,
             color: widget.mode.accentColor,
             icon: Icons.arrow_forward_rounded,
             onPressed: trimmedTask.isEmpty

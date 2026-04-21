@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tapparty/data/game_modes.dart';
+import 'package:tapparty/l10n/app_locale.dart';
+import 'package:tapparty/l10n/strings.dart';
 import 'package:tapparty/models/game_mode.dart';
 import 'package:tapparty/screens/task_input_screen.dart';
 import 'package:tapparty/screens/touch_screen.dart';
@@ -24,12 +26,12 @@ class ModeSelectionScreen extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           Text(
-            'Выбери режим',
+            S.chooseMode,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Первые три режима сами вытягивают скрытый челлендж. Ручной ввод остаётся только в Custom task.',
+            S.chooseModeHint,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 24),
@@ -57,6 +59,12 @@ class _ModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isEn = AppLocale.isEn;
+    final String title =
+        isEn && mode.titleEn != null ? mode.titleEn! : mode.title;
+    final String subtitle =
+        isEn && mode.subtitleEn != null ? mode.subtitleEn! : mode.subtitle;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -104,7 +112,7 @@ class _ModeCard extends StatelessWidget {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            mode.title,
+                            title,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
@@ -120,7 +128,7 @@ class _ModeCard extends StatelessWidget {
                               border: Border.all(color: AppTheme.stroke),
                             ),
                             child: Text(
-                              '${mode.hiddenTaskCount} hidden',
+                              S.hiddenBadge(mode.hiddenTaskCount),
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -132,7 +140,7 @@ class _ModeCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      mode.subtitle,
+                      subtitle,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],

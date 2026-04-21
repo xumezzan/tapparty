@@ -12,6 +12,7 @@ class AppTheme {
   static const Color cyan = Color(0xFF35E7FF);
   static const Color gold = Color(0xFFFFE66D);
   static const Color violet = Color(0xFF8F73FF);
+  static const Color orange = Color(0xFFFF8A5B);
 
   static ThemeData darkTheme() {
     const colorScheme = ColorScheme.dark(

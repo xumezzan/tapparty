@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tapparty/data/hidden_tasks.dart';
+import 'package:tapparty/l10n/strings.dart';
 import 'package:tapparty/models/game_mode.dart';
 import 'package:tapparty/screens/result_screen.dart';
 import 'package:tapparty/theme/app_theme.dart';
@@ -47,8 +48,8 @@ class _TouchPoint {
 class _TouchScreenState extends State<TouchScreen>
     with SingleTickerProviderStateMixin {
   static const int _minPlayers = 2;
-  static const int _maxPlayers = 4;
-  static const double _touchSize = 92;
+  static const int _maxPlayers = 6;
+  static const double _touchSize = 78;
   static const Duration _holdDuration = Duration(milliseconds: 1500);
   static const Duration _revealDelay = Duration(milliseconds: 900);
 
@@ -57,6 +58,8 @@ class _TouchScreenState extends State<TouchScreen>
     AppTheme.pink,
     AppTheme.cyan,
     AppTheme.gold,
+    AppTheme.violet,
+    AppTheme.orange,
   ];
 
   final Random _random = Random();
@@ -96,135 +99,119 @@ class _TouchScreenState extends State<TouchScreen>
   @override
   Widget build(BuildContext context) {
     return PartyScaffold(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.06),
-                ),
-                icon: const Icon(Icons.arrow_back_rounded),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  '${_touches.length} / $_maxPlayers игроков',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          _TaskHeader(
-            mode: widget.mode,
-            isHiddenTask: _isHiddenTask,
-            taskText: _taskText,
-          ),
-          const SizedBox(height: 18),
-          Expanded(
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                final Size padSize = Size(
-                  constraints.maxWidth,
-                  constraints.maxHeight,
-                );
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 14),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final Size padSize = Size(
+            constraints.maxWidth,
+            constraints.maxHeight,
+          );
 
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
-                    borderRadius: BorderRadius.circular(34),
-                    border: Border.all(color: AppTheme.stroke),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(34),
-                    child: Listener(
-                      behavior: HitTestBehavior.opaque,
-                      onPointerDown: (PointerDownEvent event) {
-                        _handlePointerDown(event, padSize);
-                      },
-                      onPointerMove: (PointerMoveEvent event) {
-                        _handlePointerMove(event, padSize);
-                      },
-                      onPointerUp: (PointerUpEvent event) {
-                        _handlePointerEnd(event.pointer);
-                      },
-                      onPointerCancel: (PointerCancelEvent event) {
-                        _handlePointerEnd(event.pointer);
-                      },
-                      child: AnimatedBuilder(
-                        animation: _pulseController,
-                        builder: (BuildContext context, Widget? child) {
-                          return Stack(
-                            children: <Widget>[
-                              const Positioned.fill(child: _PadGrid()),
-                              Positioned.fill(
-                                child: _SelectionWash(
-                                  phase: _phase,
-                                  accentColor: widget.mode.accentColor,
-                                  pulseValue: _pulseController.value,
-                                ),
-                              ),
-                              Positioned(
-                                top: 18,
-                                left: 18,
-                                right: 18,
-                                child: _StatusCard(
-                                  phase: _phase,
-                                  isHiddenTask: _isHiddenTask,
-                                  countdownProgress: _countdownProgress,
-                                  playerCount: _touches.length,
-                                ),
-                              ),
-                              if (_touches.isEmpty)
-                                const Positioned.fill(child: _EmptyState()),
-                              ..._touches.values.map(
-                                (_TouchPoint touch) => _TouchBubble(
-                                  key: ValueKey<int>(touch.pointerId),
-                                  touch: touch,
-                                  left: touch.position.dx - (_touchSize / 2),
-                                  top: touch.position.dy - (_touchSize / 2),
-                                  size: _touchSize,
-                                  phase: _phase,
-                                  pulseValue: _pulseController.value,
-                                  isFocused:
-                                      _focusedPointerId == touch.pointerId,
-                                  isWinner: _winnerPointerId == touch.pointerId,
-                                  fadeOthers:
-                                      _winnerPointerId != null &&
-                                      _winnerPointerId != touch.pointerId,
-                                ),
-                              ),
-                              Positioned(
-                                left: 18,
-                                right: 18,
-                                bottom: 18,
-                                child: _BottomHint(
-                                  phase: _phase,
-                                  isHiddenTask: _isHiddenTask,
-                                  playerCount: _touches.length,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              },
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.04),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: AppTheme.stroke),
             ),
-          ),
-        ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Listener(
+                behavior: HitTestBehavior.opaque,
+                onPointerDown: (PointerDownEvent event) {
+                  _handlePointerDown(event, padSize);
+                },
+                onPointerMove: (PointerMoveEvent event) {
+                  _handlePointerMove(event, padSize);
+                },
+                onPointerUp: (PointerUpEvent event) {
+                  _handlePointerEnd(event.pointer);
+                },
+                onPointerCancel: (PointerCancelEvent event) {
+                  _handlePointerEnd(event.pointer);
+                },
+                child: AnimatedBuilder(
+                  animation: _pulseController,
+                  builder: (BuildContext context, Widget? child) {
+                    return Stack(
+                      children: <Widget>[
+                        const Positioned.fill(child: _PadGrid()),
+                        Positioned.fill(
+                          child: _SelectionWash(
+                            phase: _phase,
+                            accentColor: widget.mode.accentColor,
+                            pulseValue: _pulseController.value,
+                          ),
+                        ),
+                        if (_touches.isEmpty)
+                          Positioned.fill(
+                            child: _EmptyState(
+                              isHiddenTask: _isHiddenTask,
+                              maxPlayers: _maxPlayers,
+                            ),
+                          ),
+                        ..._touches.values.map(
+                          (_TouchPoint touch) => _TouchBubble(
+                            key: ValueKey<int>(touch.pointerId),
+                            touch: touch,
+                            left: touch.position.dx - (_touchSize / 2),
+                            top: touch.position.dy - (_touchSize / 2),
+                            size: _touchSize,
+                            phase: _phase,
+                            pulseValue: _pulseController.value,
+                            isFocused: _focusedPointerId == touch.pointerId,
+                            isWinner: _winnerPointerId == touch.pointerId,
+                            fadeOthers:
+                                _winnerPointerId != null &&
+                                _winnerPointerId != touch.pointerId,
+                          ),
+                        ),
+                        if (_touches.isNotEmpty)
+                          Positioned(
+                            bottom: 18,
+                            left: 14,
+                            right: 14,
+                            child: IgnorePointer(
+                              child: _PlayerBar(
+                                touches: _touches.values.toList()
+                                  ..sort(
+                                    (_TouchPoint a, _TouchPoint b) =>
+                                        a.slot.compareTo(b.slot),
+                                  ),
+                                focusedPointerId: _focusedPointerId,
+                                winnerPointerId: _winnerPointerId,
+                                phase: _phase,
+                                pulseValue: _pulseController.value,
+                              ),
+                            ),
+                          ),
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          right: 12,
+                          child: _TouchHud(
+                            mode: widget.mode,
+                            phase: _phase,
+                            playerCount: _touches.length,
+                            maxPlayers: _maxPlayers,
+                            countdownProgress: _countdownProgress,
+                            isHiddenTask: _isHiddenTask,
+                            onBack: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
   void _handlePointerDown(PointerDownEvent event, Size padSize) {
-    if (_phase == _TouchPhase.selecting || _phase == _TouchPhase.chosen) {
+    if (_phase == _TouchPhase.chosen) {
       return;
     }
     if (_touches.containsKey(event.pointer) || _touches.length >= _maxPlayers) {
@@ -431,7 +418,7 @@ class _TouchScreenState extends State<TouchScreen>
             mode: widget.mode,
             taskText: _taskText,
             customTaskText: widget.customTaskText,
-            selectedPlayerLabel: 'Игрок ${winner.slot}',
+            selectedPlayerLabel: S.player(winner.slot),
           ),
         ),
       );
@@ -479,234 +466,227 @@ class _TouchScreenState extends State<TouchScreen>
   }
 }
 
-class _TaskHeader extends StatelessWidget {
-  const _TaskHeader({
+class _TouchHud extends StatelessWidget {
+  const _TouchHud({
     required this.mode,
+    required this.phase,
+    required this.playerCount,
+    required this.maxPlayers,
+    required this.countdownProgress,
     required this.isHiddenTask,
-    required this.taskText,
+    required this.onBack,
   });
 
   final GameMode mode;
+  final _TouchPhase phase;
+  final int playerCount;
+  final int maxPlayers;
+  final double countdownProgress;
   final bool isHiddenTask;
-  final String taskText;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppTheme.stroke),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: mode.accentColor,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(
-                  mode.title,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelLarge?.copyWith(color: AppTheme.background),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            IconButton(
+              onPressed: onBack,
+              style: IconButton.styleFrom(
+                backgroundColor: AppTheme.background.withValues(alpha: 0.68),
+                foregroundColor: AppTheme.textPrimary,
+              ),
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: <Widget>[
+                    _HudChip(
+                      label: mode.title,
+                      backgroundColor: mode.accentColor,
+                      foregroundColor: AppTheme.background,
+                    ),
+                    if (isHiddenTask)
+                      _HudChip(
+                        label: S.secret,
+                        icon: Icons.lock_outline_rounded,
+                      ),
+                    _HudChip(
+                      label: '$playerCount/$maxPlayers',
+                      icon: Icons.touch_app_rounded,
+                    ),
+                  ],
                 ),
               ),
-              if (isHiddenTask) ...<Widget>[
-                const SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          decoration: BoxDecoration(
+            color: AppTheme.background.withValues(alpha: 0.72),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.stroke),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      _phaseLabel,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: AppTheme.stroke),
-                  ),
-                  child: Text(
-                    'hidden',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: AppTheme.textMuted,
-                      fontSize: 12,
+                  if (phase == _TouchPhase.countingDown)
+                    Text(
+                      '${(countdownProgress * 100).round()}%',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                ],
+              ),
+              if (phase == _TouchPhase.countingDown) ...<Widget>[
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    minHeight: 6,
+                    value: countdownProgress,
+                    backgroundColor: Colors.white.withValues(alpha: 0.06),
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppTheme.acid,
                     ),
                   ),
                 ),
               ],
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            isHiddenTask
-                ? 'Челлендж уже выбран, но откроется только после рандома. До результата никто не знает, что именно выпадет.'
-                : taskText,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  String get _phaseLabel {
+    return switch (phase) {
+      _TouchPhase.waiting =>
+        playerCount == 0 ? S.placeFingersPrompt : S.needOneMore,
+      _TouchPhase.countingDown => S.keepFingers,
+      _TouchPhase.selecting => S.gameSelecting,
+      _TouchPhase.chosen => S.revealingResult,
+    };
   }
 }
 
-class _StatusCard extends StatelessWidget {
-  const _StatusCard({
-    required this.phase,
-    required this.isHiddenTask,
-    required this.countdownProgress,
-    required this.playerCount,
+class _HudChip extends StatelessWidget {
+  const _HudChip({
+    required this.label,
+    this.icon,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
-  final _TouchPhase phase;
-  final bool isHiddenTask;
-  final double countdownProgress;
-  final int playerCount;
+  final String label;
+  final IconData? icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
-    final String title = switch (phase) {
-      _TouchPhase.waiting =>
-        playerCount == 0
-            ? 'Положите пальцы на экран'
-            : 'Нужен ещё хотя бы один игрок',
-      _TouchPhase.countingDown => 'Не убирайте пальцы',
-      _TouchPhase.selecting => 'Игра выбирает',
-      _TouchPhase.chosen => 'Выбор сделан',
-    };
-
-    final String subtitle = switch (phase) {
-      _TouchPhase.waiting =>
-        isHiddenTask
-            ? 'Скрытый челлендж уже запечатан. Поддержка от 2 до 4 касаний одновременно.'
-            : 'Поддержка от 2 до 4 касаний одновременно.',
-      _TouchPhase.countingDown =>
-        isHiddenTask
-            ? 'Если кто-то уберёт палец раньше времени, отсчёт начнётся заново, а челлендж останется секретом до финала.'
-            : 'Если кто-то уберёт палец раньше времени, отсчёт начнётся заново.',
-      _TouchPhase.selecting =>
-        isHiddenTask
-            ? 'Сейчас игра выберет игрока, а затем раскроет скрытый челлендж.'
-            : 'Победитель выбирается случайно только среди активных касаний.',
-      _TouchPhase.chosen =>
-        isHiddenTask
-            ? 'Игрок найден. Следом откроется и его скрытый челлендж.'
-            : 'Остальные игроки затемняются, победитель выделяется.',
-    };
+    final Color bg =
+        backgroundColor ?? AppTheme.background.withValues(alpha: 0.7);
+    final Color fg = foregroundColor ?? AppTheme.textPrimary;
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
-        color: AppTheme.background.withValues(alpha: 0.74),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppTheme.stroke),
+        color: bg,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: backgroundColor == null ? AppTheme.stroke : bg,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 6),
-          Text(subtitle, style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(999),
-            child: LinearProgressIndicator(
-              minHeight: 8,
-              value: phase == _TouchPhase.countingDown ? countdownProgress : 0,
-              backgroundColor: Colors.white.withValues(alpha: 0.06),
-              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.acid),
-            ),
+          if (icon != null) ...<Widget>[
+            Icon(icon, size: 15, color: fg),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            style: Theme.of(
+              context,
+            ).textTheme.labelLarge?.copyWith(color: fg, fontSize: 13),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _BottomHint extends StatelessWidget {
-  const _BottomHint({
-    required this.phase,
-    required this.isHiddenTask,
-    required this.playerCount,
-  });
-
-  final _TouchPhase phase;
-  final bool isHiddenTask;
-  final int playerCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final String text = switch (phase) {
-      _TouchPhase.waiting =>
-        playerCount == 0
-            ? isHiddenTask
-                  ? 'Начни с двух пальцев. Челлендж пока скрыт и откроется только после выбора.'
-                  : 'Начни с двух пальцев. Лишние касания после 4 просто игнорируются.'
-            : 'Сейчас игроков: $playerCount. Минимум для старта: 2.',
-      _TouchPhase.countingDown =>
-        isHiddenTask
-            ? 'Все узнают задание только после финального выбора.'
-            : 'Состав игроков зафиксируется, если все удержат экран до конца отсчёта.',
-      _TouchPhase.selecting =>
-        'Во время выбора лучше не двигать и не убирать пальцы.',
-      _TouchPhase.chosen => 'Победитель уже определён.',
-    };
-
-    return Text(
-      text,
-      textAlign: TextAlign.center,
-      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({required this.isHiddenTask, required this.maxPlayers});
+
+  final bool isHiddenTask;
+  final int maxPlayers;
 
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
       child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              width: 84,
-              height: 84,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppTheme.textMuted.withValues(alpha: 0.3),
-                  width: 2,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                width: 78,
+                height: 78,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppTheme.textMuted.withValues(alpha: 0.28),
+                    width: 2,
+                  ),
+                ),
+                child: const Icon(
+                  Icons.touch_app_rounded,
+                  color: AppTheme.textMuted,
+                  size: 32,
                 ),
               ),
-              child: const Icon(
-                Icons.touch_app_rounded,
-                color: AppTheme.textMuted,
-                size: 34,
+              const SizedBox(height: 16),
+              Text(
+                S.placeFingers,
+                textAlign: TextAlign.center,
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium?.copyWith(fontSize: 26),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Приложите пальцы',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontSize: 28),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'От 2 до 4 игроков.\nДержите пальцы, пока игра не выберет одного.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                isHiddenTask
+                    ? S.hiddenHint(maxPlayers)
+                    : S.customHint(maxPlayers),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -815,8 +795,8 @@ class _TouchBubble extends StatelessWidget {
     final bool isIdleBreathing =
         phase == _TouchPhase.waiting || phase == _TouchPhase.countingDown;
     final double breathingScale = 0.97 + (pulseValue * 0.05);
-    final double focusScale = 1.08 + (pulseValue * 0.08);
-    final double winnerScale = 1.18 + (pulseValue * 0.10);
+    final double focusScale = 1.08 + (pulseValue * 0.07);
+    final double winnerScale = 1.16 + (pulseValue * 0.09);
     final double scale = isWinner
         ? winnerScale
         : isFocused
@@ -835,15 +815,16 @@ class _TouchBubble extends StatelessWidget {
         ? 1
         : 0.96;
     final double glowBlur = isWinner
-        ? 36 + (pulseValue * 12)
+        ? 34 + (pulseValue * 12)
         : isFocused
-        ? 30 + (pulseValue * 10)
-        : 22 + (pulseValue * 6);
+        ? 28 + (pulseValue * 10)
+        : 20 + (pulseValue * 6);
     final double glowAlpha = isWinner
         ? 0.55
         : isFocused
         ? 0.48
         : 0.34;
+    final double innerSize = size * 0.38;
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 70),
@@ -856,45 +837,226 @@ class _TouchBubble extends StatelessWidget {
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 160),
             opacity: opacity,
-            child: Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: <Color>[
-                    Colors.white.withValues(alpha: 0.75),
-                    touch.color,
-                    touch.color.withValues(alpha: 0.95),
-                  ],
-                  stops: const <double>[0.0, 0.18, 1.0],
-                ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: touch.color.withValues(alpha: glowAlpha),
-                    blurRadius: glowBlur,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Container(
-                  width: 32,
-                  height: 32,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: size,
+                  height: size,
                   decoration: BoxDecoration(
-                    color: AppTheme.background.withValues(alpha: 0.76),
                     shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: <Color>[
+                        Colors.white.withValues(alpha: 0.75),
+                        touch.color,
+                        touch.color.withValues(alpha: 0.95),
+                      ],
+                      stops: const <double>[0.0, 0.18, 1.0],
+                    ),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: touch.color.withValues(alpha: glowAlpha),
+                        blurRadius: glowBlur,
+                        spreadRadius: 2,
+                      ),
+                      if (isFocused || isWinner)
+                        BoxShadow(
+                          color: Colors.white.withValues(
+                            alpha: isWinner ? 0.85 : 0.50,
+                          ),
+                          blurRadius: 0,
+                          spreadRadius: isWinner ? 5 : 3,
+                        ),
+                    ],
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${touch.slot}',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                      color: AppTheme.textPrimary,
+                  child: Center(
+                    child: Container(
+                      width: innerSize,
+                      height: innerSize,
+                      decoration: BoxDecoration(
+                        color: AppTheme.background.withValues(alpha: 0.76),
+                        shape: BoxShape.circle,
+                      ),
+                      alignment: Alignment.center,
+                      child: isWinner
+                          ? Icon(
+                              Icons.star_rounded,
+                              size: size * 0.26,
+                              color: touch.color,
+                            )
+                          : Text(
+                              '${touch.slot}',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.labelLarge?.copyWith(
+                                color: AppTheme.textPrimary,
+                                fontSize: size * 0.23,
+                              ),
+                            ),
                     ),
                   ),
                 ),
-              ),
+                if (isWinner)
+                  Positioned(
+                    top: -14,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: touch.color,
+                        borderRadius: BorderRadius.circular(999),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: touch.color.withValues(alpha: 0.6),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        '${touch.slot}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.background,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PlayerBar extends StatelessWidget {
+  const _PlayerBar({
+    required this.touches,
+    required this.focusedPointerId,
+    required this.winnerPointerId,
+    required this.phase,
+    required this.pulseValue,
+  });
+
+  final List<_TouchPoint> touches;
+  final int? focusedPointerId;
+  final int? winnerPointerId;
+  final _TouchPhase phase;
+  final double pulseValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSelecting = phase == _TouchPhase.selecting;
+    final bool isChosen = phase == _TouchPhase.chosen;
+
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 8,
+        runSpacing: 8,
+        children: touches.map((_TouchPoint touch) {
+          final bool isFocused = focusedPointerId == touch.pointerId;
+          final bool isWinner = winnerPointerId == touch.pointerId;
+          final bool dimmed =
+              (isSelecting || isChosen) && !isFocused && !isWinner;
+          return _PlayerChip(
+            touch: touch,
+            isFocused: isFocused,
+            isWinner: isWinner,
+            dimmed: dimmed,
+            pulseValue: pulseValue,
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _PlayerChip extends StatelessWidget {
+  const _PlayerChip({
+    required this.touch,
+    required this.isFocused,
+    required this.isWinner,
+    required this.dimmed,
+    required this.pulseValue,
+  });
+
+  final _TouchPoint touch;
+  final bool isFocused;
+  final bool isWinner;
+  final bool dimmed;
+  final double pulseValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final double scale = isWinner
+        ? 1.18 + pulseValue * 0.06
+        : isFocused
+        ? 1.10 + pulseValue * 0.04
+        : 1.0;
+    final double bgAlpha = isWinner || isFocused ? 1.0 : 0.15;
+    final double opacity = dimmed ? 0.22 : 1.0;
+
+    return AnimatedScale(
+      duration: const Duration(milliseconds: 140),
+      scale: scale,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 140),
+        opacity: opacity,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+          decoration: BoxDecoration(
+            color: touch.color.withValues(alpha: bgAlpha),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: touch.color.withValues(
+                alpha: isWinner || isFocused ? 1.0 : 0.5,
+              ),
+              width: isWinner ? 2.5 : 1.5,
+            ),
+            boxShadow: (isWinner || isFocused)
+                ? <BoxShadow>[
+                    BoxShadow(
+                      color: touch.color.withValues(
+                        alpha: isWinner ? 0.55 : 0.35,
+                      ),
+                      blurRadius: isWinner ? 20 : 12,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (isWinner) ...<Widget>[
+                Icon(
+                  Icons.star_rounded,
+                  size: 13,
+                  color: AppTheme.background,
+                ),
+                const SizedBox(width: 5),
+              ],
+              Text(
+                S.player(touch.slot),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: isWinner || isFocused
+                      ? AppTheme.background
+                      : touch.color,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
           ),
         ),
       ),

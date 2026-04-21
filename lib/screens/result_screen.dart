@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tapparty/l10n/strings.dart';
 import 'package:tapparty/models/game_mode.dart';
 import 'package:tapparty/screens/mode_selection_screen.dart';
 import 'package:tapparty/screens/task_input_screen.dart';
@@ -20,6 +21,8 @@ class ResultScreen extends StatelessWidget {
   final String taskText;
   final String? customTaskText;
   final String selectedPlayerLabel;
+
+  bool get _isWhoPays => mode.id == 'who_pays';
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +62,7 @@ class ResultScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  'ты выбран',
+                  _isWhoPays ? S.youPay : S.youAreChosen,
                   style: Theme.of(
                     context,
                   ).textTheme.labelLarge?.copyWith(color: AppTheme.background),
@@ -69,7 +72,7 @@ class ResultScreen extends StatelessWidget {
             const SizedBox(height: 18),
             Center(
               child: Text(
-                'Выполняет',
+                _isWhoPays ? S.pays : S.performs,
                 style: Theme.of(context).textTheme.labelLarge?.copyWith(
                   fontSize: 12,
                   letterSpacing: 1.1,
@@ -101,7 +104,11 @@ class ResultScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    isHiddenTask ? 'Скрытый челлендж' : 'Задание',
+                    _isWhoPays
+                        ? S.payScenario
+                        : isHiddenTask
+                        ? S.hiddenChallenge
+                        : S.task,
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       fontSize: 12,
                       color: AppTheme.textMuted,
@@ -117,23 +124,27 @@ class ResultScreen extends StatelessWidget {
             ),
             const Spacer(),
             NeonButton(
-              label: 'Сыграть ещё раз',
+              label: S.playAgain,
               color: mode.accentColor,
               icon: Icons.replay_rounded,
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute<void>(
-                    builder: (_) =>
-                        TouchScreen(mode: mode, customTaskText: customTaskText),
+                    builder: (_) => TouchScreen(
+                      mode: mode,
+                      customTaskText: customTaskText,
+                    ),
                   ),
                 );
               },
             ),
             const SizedBox(height: 12),
             NeonButton(
-              label: isHiddenTask ? 'Выбрать режим' : 'Новое задание',
+              label: isHiddenTask ? S.chooseModeBtnLabel : S.newTask,
               outlined: true,
-              icon: isHiddenTask ? Icons.grid_view_rounded : Icons.edit_rounded,
+              icon: isHiddenTask
+                  ? Icons.grid_view_rounded
+                  : Icons.edit_rounded,
               onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute<void>(
@@ -146,7 +157,7 @@ class ResultScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             NeonButton(
-              label: 'Домой',
+              label: S.home,
               outlined: true,
               icon: Icons.home_rounded,
               onPressed: () {
@@ -208,7 +219,7 @@ class _WinnerGlow extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Text(
-              playerLabel.replaceFirst('Игрок ', ''),
+              playerLabel.replaceFirst('Игрок ', '').replaceFirst('Player ', ''),
               style: Theme.of(
                 context,
               ).textTheme.displayLarge?.copyWith(fontSize: 38),

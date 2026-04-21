@@ -25,40 +25,41 @@ class _BackgroundLayer extends StatelessWidget {
     return DecoratedBox(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: <Color>[
-            AppTheme.background,
-            Color(0xFF090A11),
-            Color(0xFF06070B),
+            Color(0xFF0A0B12),
+            Color(0xFF08090F),
+            Color(0xFF050609),
           ],
         ),
       ),
       child: Stack(
         children: const <Widget>[
           Positioned(
-            top: -90,
-            right: -70,
-            child: _GlowCircle(size: 220, color: AppTheme.pink, opacity: 0.30),
+            top: -60,
+            right: -50,
+            child: _GlowCircle(size: 260, color: AppTheme.violet, opacity: 0.20),
           ),
           Positioned(
-            top: 140,
-            left: -40,
-            child: _GlowCircle(size: 160, color: AppTheme.cyan, opacity: 0.22),
+            top: 180,
+            left: -60,
+            child: _GlowCircle(size: 180, color: AppTheme.cyan, opacity: 0.16),
           ),
           Positioned(
-            bottom: -70,
-            left: -50,
-            child: _GlowCircle(
-              size: 220,
-              color: AppTheme.violet,
-              opacity: 0.22,
-            ),
+            bottom: -80,
+            right: -40,
+            child: _GlowCircle(size: 240, color: AppTheme.pink, opacity: 0.18),
           ),
           Positioned(
-            bottom: 160,
-            right: 20,
-            child: _GlowCircle(size: 120, color: AppTheme.acid, opacity: 0.18),
+            bottom: 200,
+            left: 30,
+            child: _GlowCircle(size: 100, color: AppTheme.acid, opacity: 0.14),
+          ),
+          Positioned(
+            top: 320,
+            right: 60,
+            child: _GlowCircle(size: 80, color: AppTheme.gold, opacity: 0.12),
           ),
         ],
       ),
@@ -89,8 +90,8 @@ class _GlowCircle extends StatelessWidget {
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: color.withValues(alpha: opacity),
-              blurRadius: 90,
-              spreadRadius: 16,
+              blurRadius: 100,
+              spreadRadius: 20,
             ),
           ],
         ),
