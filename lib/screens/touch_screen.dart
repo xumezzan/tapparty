@@ -841,6 +841,7 @@ class _TouchBubble extends StatelessWidget {
               clipBehavior: Clip.none,
               alignment: Alignment.center,
               children: <Widget>[
+                // ── main bubble ──
                 Container(
                   width: size,
                   height: size,
@@ -882,51 +883,84 @@ class _TouchBubble extends StatelessWidget {
                       child: isWinner
                           ? Icon(
                               Icons.star_rounded,
-                              size: size * 0.26,
+                              size: size * 0.28,
                               color: touch.color,
                             )
-                          : Text(
-                              '${touch.slot}',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.labelLarge?.copyWith(
-                                color: AppTheme.textPrimary,
-                                fontSize: size * 0.23,
-                              ),
-                            ),
+                          : null,
                     ),
                   ),
                 ),
-                if (isWinner)
-                  Positioned(
-                    top: -14,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: touch.color,
-                        borderRadius: BorderRadius.circular(999),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: touch.color.withValues(alpha: 0.6),
-                            blurRadius: 10,
-                            spreadRadius: 1,
+                // ── floating label above finger ──
+                Positioned(
+                  top: -42,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 420),
+                      curve: Curves.easeOutBack,
+                      builder: (
+                        BuildContext ctx,
+                        double v,
+                        Widget? child,
+                      ) {
+                        return Transform.translate(
+                          offset: Offset(0, (1 - v.clamp(0.0, 1.0)) * 10),
+                          child: Transform.scale(
+                            scale: v.clamp(0.0, 1.5),
+                            child: Opacity(
+                              opacity: v.clamp(0.0, 1.0),
+                              child: child,
+                            ),
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        '${touch.slot}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
-                          color: AppTheme.background,
-                          letterSpacing: 0.2,
+                        );
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isWinner ? 14 : 11,
+                          vertical: isWinner ? 7 : 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: touch.color,
+                          borderRadius: BorderRadius.circular(999),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: touch.color.withValues(
+                                alpha: isWinner ? 0.70 : isFocused ? 0.50 : 0.35,
+                              ),
+                              blurRadius: isWinner ? 20 : isFocused ? 14 : 8,
+                              spreadRadius: isWinner ? 3 : 1,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            if (isWinner) ...<Widget>[
+                              Icon(
+                                Icons.star_rounded,
+                                size: 13,
+                                color: AppTheme.background,
+                              ),
+                              const SizedBox(width: 5),
+                            ],
+                            Text(
+                              '${touch.slot}',
+                              style: TextStyle(
+                                fontSize: isWinner ? 15 : 13,
+                                fontWeight: FontWeight.w900,
+                                color: AppTheme.background,
+                                letterSpacing: 0.2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
+                ),
               ],
             ),
           ),
