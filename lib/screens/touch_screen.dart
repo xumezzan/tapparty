@@ -430,6 +430,7 @@ class _TouchScreenState extends State<TouchScreen>
             taskText: _taskText,
             customTaskText: widget.customTaskText,
             selectedPlayerLabel: S.player(winner.slot),
+            playerColor: winner.color,
           ),
         ),
       );

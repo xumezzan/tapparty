@@ -15,12 +15,14 @@ class ResultScreen extends StatelessWidget {
     required this.taskText,
     required this.customTaskText,
     required this.selectedPlayerLabel,
+    required this.playerColor,
   });
 
   final GameMode mode;
   final String taskText;
   final String? customTaskText;
   final String selectedPlayerLabel;
+  final Color playerColor;
 
   bool get _isWhoPays => mode.id == 'who_pays';
 
@@ -44,12 +46,14 @@ class ResultScreen extends StatelessWidget {
                 payScenarioText: taskText,
                 selectedPlayerLabel: selectedPlayerLabel,
                 customTaskText: customTaskText,
+                playerColor: playerColor,
               )
             : _DefaultResult(
                 mode: mode,
                 taskText: taskText,
                 customTaskText: customTaskText,
                 selectedPlayerLabel: selectedPlayerLabel,
+                playerColor: playerColor,
               ),
       ),
     );
@@ -64,16 +68,18 @@ class _WhoPaysFull extends StatelessWidget {
     required this.payScenarioText,
     required this.selectedPlayerLabel,
     required this.customTaskText,
+    required this.playerColor,
   });
 
   final GameMode mode;
   final String payScenarioText;
   final String selectedPlayerLabel;
   final String? customTaskText;
+  final Color playerColor;
 
   @override
   Widget build(BuildContext context) {
-    final Color c = mode.accentColor;
+    final Color c = playerColor;
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
@@ -215,12 +221,14 @@ class _DefaultResult extends StatelessWidget {
     required this.taskText,
     required this.customTaskText,
     required this.selectedPlayerLabel,
+    required this.playerColor,
   });
 
   final GameMode mode;
   final String taskText;
   final String? customTaskText;
   final String selectedPlayerLabel;
+  final Color playerColor;
 
   @override
   Widget build(BuildContext context) {
@@ -232,7 +240,7 @@ class _DefaultResult extends StatelessWidget {
         const Spacer(),
         Center(
           child: _WinnerGlow(
-            accentColor: mode.accentColor,
+            accentColor: playerColor,
             playerLabel: selectedPlayerLabel,
           ),
         ),
@@ -241,7 +249,7 @@ class _DefaultResult extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: mode.accentColor,
+              color: playerColor,
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
@@ -270,7 +278,7 @@ class _DefaultResult extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.displayLarge?.copyWith(
               fontSize: 48,
-              color: mode.accentColor,
+              color: playerColor,
             ),
           ),
         ),
