@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tapparty/l10n/app_locale.dart';
 
 class GameMode {
   const GameMode({
@@ -28,4 +29,20 @@ class GameMode {
   final List<String> examples;
   final List<String>? examplesEn;
   final bool requiresManualTaskInput;
+
+  String get localizedTitle =>
+      AppLocale.isEn && titleEn != null ? titleEn! : title;
+
+  String get localizedSubtitle =>
+      AppLocale.isEn && subtitleEn != null ? subtitleEn! : subtitle;
+
+  String? get localizedBadgeText {
+    if (AppLocale.isEn && badgeTextEn != null) {
+      return badgeTextEn!;
+    }
+    return badgeText;
+  }
+
+  List<String> get localizedExamples =>
+      AppLocale.isEn && examplesEn != null ? examplesEn! : examples;
 }

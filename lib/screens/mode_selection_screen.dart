@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:tapparty/data/game_modes.dart';
-import 'package:tapparty/l10n/app_locale.dart';
 import 'package:tapparty/l10n/strings.dart';
 import 'package:tapparty/models/game_mode.dart';
 import 'package:tapparty/screens/task_input_screen.dart';
@@ -59,12 +58,6 @@ class _ModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isEn = AppLocale.isEn;
-    final String title =
-        isEn && mode.titleEn != null ? mode.titleEn! : mode.title;
-    final String subtitle =
-        isEn && mode.subtitleEn != null ? mode.subtitleEn! : mode.subtitle;
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -112,11 +105,11 @@ class _ModeCard extends StatelessWidget {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            title,
+                            mode.localizedTitle,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
-                        if (mode.badgeText != null)
+                        if (mode.localizedBadgeText != null)
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
@@ -128,9 +121,7 @@ class _ModeCard extends StatelessWidget {
                               border: Border.all(color: AppTheme.stroke),
                             ),
                             child: Text(
-                              isEn && mode.badgeTextEn != null
-                                  ? mode.badgeTextEn!
-                                  : mode.badgeText!,
+                              mode.localizedBadgeText!,
                               style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
@@ -142,7 +133,7 @@ class _ModeCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      subtitle,
+                      mode.localizedSubtitle,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],

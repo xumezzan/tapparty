@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:tapparty/l10n/app_locale.dart';
 import 'package:tapparty/l10n/strings.dart';
 import 'package:tapparty/models/game_mode.dart';
 import 'package:tapparty/screens/touch_screen.dart';
@@ -21,12 +20,7 @@ class TaskInputScreen extends StatefulWidget {
 class _TaskInputScreenState extends State<TaskInputScreen> {
   late final TextEditingController _controller;
   final Random _random = Random();
-
-  List<String> get _examples {
-    final bool isEn = AppLocale.isEn;
-    final List<String>? en = widget.mode.examplesEn;
-    return isEn && en != null ? en : widget.mode.examples;
-  }
+  List<String> get _examples => widget.mode.localizedExamples;
 
   @override
   void initState() {
@@ -104,8 +98,12 @@ class _TaskInputScreenState extends State<TaskInputScreen> {
                       controller: _controller,
                       maxLines: 5,
                       minLines: 5,
+                      maxLength: 200,
                       style: Theme.of(context).textTheme.bodyLarge,
-                      decoration: InputDecoration(hintText: S.inputPlaceholder),
+                      decoration: InputDecoration(
+                        hintText: S.inputPlaceholder,
+                        counterText: '',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(

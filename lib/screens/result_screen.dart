@@ -41,6 +41,7 @@ class ResultScreen extends StatelessWidget {
         child: _isWhoPays
             ? _WhoPaysFull(
                 mode: mode,
+                payScenarioText: taskText,
                 selectedPlayerLabel: selectedPlayerLabel,
                 customTaskText: customTaskText,
               )
@@ -60,104 +61,148 @@ class ResultScreen extends StatelessWidget {
 class _WhoPaysFull extends StatelessWidget {
   const _WhoPaysFull({
     required this.mode,
+    required this.payScenarioText,
     required this.selectedPlayerLabel,
     required this.customTaskText,
   });
 
   final GameMode mode;
+  final String payScenarioText;
   final String selectedPlayerLabel;
   final String? customTaskText;
 
   @override
   Widget build(BuildContext context) {
     final Color c = mode.accentColor;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        const Spacer(flex: 2),
-        // Большой круг победителя
-        _WinnerGlow(accentColor: c, playerLabel: selectedPlayerLabel, size: 200),
-        const SizedBox(height: 32),
-        // Имя игрока
-        Text(
-          selectedPlayerLabel,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-            fontSize: 52,
-            color: c,
-          ),
-        ),
-        const SizedBox(height: 20),
-        // Главный текст — «ты платишь»
-        TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0.85, end: 1.0),
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeOutBack,
-          builder: (BuildContext ctx, double v, Widget? child) =>
-              Transform.scale(scale: v, child: child),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-            decoration: BoxDecoration(
-              color: c,
-              borderRadius: BorderRadius.circular(999),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: c.withValues(alpha: 0.55),
-                  blurRadius: 36,
-                  spreadRadius: 4,
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(height: 24),
+                _WinnerGlow(
+                  accentColor: c,
+                  playerLabel: selectedPlayerLabel,
+                  size: 200,
                 ),
+                const SizedBox(height: 32),
+                Text(
+                  selectedPlayerLabel,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontSize: 52,
+                    color: c,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.85, end: 1.0),
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOutBack,
+                  builder: (BuildContext ctx, double v, Widget? child) =>
+                      Transform.scale(scale: v, child: child),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 28,
+                      vertical: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: c,
+                      borderRadius: BorderRadius.circular(999),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: c.withValues(alpha: 0.55),
+                          blurRadius: 36,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      S.youPay,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            color: AppTheme.background,
+                            fontWeight: FontWeight.w900,
+                          ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: AppTheme.stroke),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        S.payScenario,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontSize: 12,
+                          color: AppTheme.textMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        payScenarioText,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                NeonButton(
+                  label: S.playAgain,
+                  color: c,
+                  icon: Icons.replay_rounded,
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute<void>(
+                        builder: (_) => TouchScreen(
+                          mode: mode,
+                          customTaskText: customTaskText,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                NeonButton(
+                  label: S.chooseModeBtnLabel,
+                  outlined: true,
+                  icon: Icons.grid_view_rounded,
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const ModeSelectionScreen(),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                NeonButton(
+                  label: S.home,
+                  outlined: true,
+                  icon: Icons.home_rounded,
+                  onPressed: () {
+                    Navigator.of(context).popUntil(
+                      (Route<dynamic> route) => route.isFirst,
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
               ],
             ),
-            child: Text(
-              S.youPay,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: AppTheme.background,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
           ),
-        ),
-        const Spacer(flex: 3),
-        NeonButton(
-          label: S.playAgain,
-          color: c,
-          icon: Icons.replay_rounded,
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute<void>(
-                builder: (_) => TouchScreen(
-                  mode: mode,
-                  customTaskText: customTaskText,
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        NeonButton(
-          label: S.chooseModeBtnLabel,
-          outlined: true,
-          icon: Icons.grid_view_rounded,
-          onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute<void>(
-                builder: (_) => const ModeSelectionScreen(),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        NeonButton(
-          label: S.home,
-          outlined: true,
-          icon: Icons.home_rounded,
-          onPressed: () {
-            Navigator.of(context).popUntil(
-              (Route<dynamic> route) => route.isFirst,
-            );
-          },
-        ),
-      ],
+        );
+      },
     );
   }
 }
@@ -357,9 +402,7 @@ class _WinnerGlow extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Text(
-              playerLabel
-                  .replaceFirst('Игрок ', '')
-                  .replaceFirst('Player ', ''),
+              playerLabel.split(' ').last,
               style: Theme.of(context).textTheme.displayLarge?.copyWith(
                 fontSize: size * 0.23,
               ),

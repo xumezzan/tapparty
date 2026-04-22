@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tapparty</string>
+	<string>tap.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -31,7 +31,7 @@
 		<string>_dartVmService._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Tapparty uses the local network in debug mode so Flutter can connect DevTools and hot reload to your iPhone.</string>
+	<string>tap. uses the local network in debug mode so Flutter can connect DevTools and hot reload to your iPhone.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -47,8 +47,6 @@
 					<string>flutter</string>
 					<key>UISceneDelegateClassName</key>
 					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-					<key>UISceneStoryboardFile</key>
-					<string>Main</string>
 				</dict>
 			</array>
 		</dict>
@@ -57,8 +55,6 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

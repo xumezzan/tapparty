@@ -46,7 +46,7 @@ class _TouchPoint {
 }
 
 class _TouchScreenState extends State<TouchScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   static const int _minPlayers = 2;
   static const int _maxPlayers = 5;
   static const double _touchSize = 78;
@@ -80,6 +80,7 @@ class _TouchScreenState extends State<TouchScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -90,9 +91,23 @@ class _TouchScreenState extends State<TouchScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _cancelAllTimers();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        _resetSession(clearTouches: true);
+      case AppLifecycleState.resumed:
+        break;
+    }
   }
 
   @override
@@ -210,7 +225,7 @@ class _TouchScreenState extends State<TouchScreen>
   }
 
   void _handlePointerDown(PointerDownEvent event, Size padSize) {
-    if (_phase == _TouchPhase.chosen) {
+    if (_phase == _TouchPhase.selecting || _phase == _TouchPhase.chosen) {
       return;
     }
     if (_touches.containsKey(event.pointer) || _touches.length >= _maxPlayers) {
@@ -352,35 +367,32 @@ class _TouchScreenState extends State<TouchScreen>
     const int endIntervalMs = 280;
 
     final double progress = (_selectionElapsedMs / totalMs).clamp(0.0, 1.0);
+
+    // Once the animation has committed to a winner, finalize immediately.
+    // This prevents lifting a finger during the final reveal from restarting the game.
+    if (progress > 0.86) {
+      _finishSelection(winnerId);
+      return;
+    }
+
     final int intervalMs =
         startIntervalMs +
         ((endIntervalMs - startIntervalMs) * progress * progress).round();
 
-    int pickedPointerId;
-    if (progress > 0.86) {
-      pickedPointerId = winnerId;
-    } else {
-      pickedPointerId = ids[_random.nextInt(ids.length)];
-      if (ids.length > 1 && pickedPointerId == lastPointerId) {
-        pickedPointerId = ids.firstWhere((int id) => id != lastPointerId);
-      }
+    int pickedPointerId = ids[_random.nextInt(ids.length)];
+    if (ids.length > 1 && pickedPointerId == lastPointerId) {
+      pickedPointerId = ids.firstWhere(
+        (int id) => id != lastPointerId,
+        orElse: () => winnerId,
+      );
     }
 
     setState(() {
       _focusedPointerId = pickedPointerId;
     });
-    if (progress < 0.9) {
-      unawaited(HapticFeedback.selectionClick());
-    } else {
-      unawaited(HapticFeedback.lightImpact());
-    }
+    unawaited(HapticFeedback.selectionClick());
 
     _selectionElapsedMs += intervalMs;
-
-    if (_selectionElapsedMs >= totalMs) {
-      _finishSelection(winnerId);
-      return;
-    }
 
     _selectionStepTimer = Timer(Duration(milliseconds: intervalMs), () {
       _runSelectionStep(winnerId: winnerId, lastPointerId: pickedPointerId);
@@ -427,9 +439,9 @@ class _TouchScreenState extends State<TouchScreen>
   String _pickHiddenTask() {
     final List<String> tasks = hiddenTasksForMode(widget.mode.id);
     if (tasks.isEmpty) {
-      return widget.mode.examples.first;
+      return widget.mode.localizedExamples.first;
     }
-    return tasks[_random.nextInt(tasks.length)];
+    return tasks[pickHiddenTaskIndex(widget.mode.id, tasks.length)];
   }
 
   int _nextFreeSlot() {
@@ -462,6 +474,24 @@ class _TouchScreenState extends State<TouchScreen>
 
   void _cancelAllTimers() {
     _cancelSelectionTimers();
+  }
+
+  void _resetSession({required bool clearTouches}) {
+    _cancelSelectionTimers();
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _phase = _TouchPhase.waiting;
+      _countdownProgress = 0;
+      _focusedPointerId = null;
+      _winnerPointerId = null;
+      _selectionElapsedMs = 0;
+      if (clearTouches) {
+        _touches.clear();
+      }
+    });
   }
 }
 
@@ -509,7 +539,7 @@ class _TouchHud extends StatelessWidget {
                   runSpacing: 8,
                   children: <Widget>[
                     _HudChip(
-                      label: mode.title,
+                      label: mode.localizedTitle,
                       backgroundColor: mode.accentColor,
                       foregroundColor: AppTheme.background,
                     ),

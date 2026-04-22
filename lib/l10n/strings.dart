@@ -2,6 +2,9 @@ import 'app_locale.dart';
 
 abstract final class S {
   // Home
+  static String get partyBadge => AppLocale.isEn
+      ? 'party game for friends'
+      : 'игра для компании';
   static String get homeDescription => AppLocale.isEn
       ? 'Quick game for your crew. Place fingers on the screen, wait for the neon pick, and find out who gets the task.'
       : 'Быстрая игра для компании. Положите пальцы на экран, дождитесь неонового выбора и узнайте, кто выполняет задание.';
@@ -54,6 +57,26 @@ abstract final class S {
       AppLocale.isEn ? 'Choose mode' : 'Выбрать режим';
   static String get newTask => AppLocale.isEn ? 'New task' : 'Новое задание';
   static String get home => AppLocale.isEn ? 'Home' : 'Домой';
+
+  // How to play
+  static String get howToPlay =>
+      AppLocale.isEn ? 'How to play' : 'Как играть';
+  static String get howToPlayStep1Title =>
+      AppLocale.isEn ? 'Choose a mode' : 'Выбери режим';
+  static String get howToPlayStep1Body => AppLocale.isEn
+      ? 'Truth, Dare, Who Pays, or set your own task.'
+      : 'Правда, Действие, Кто платит — или задай свой сценарий.';
+  static String get howToPlayStep2Title =>
+      AppLocale.isEn ? 'Place your fingers' : 'Все кладут пальцы';
+  static String get howToPlayStep2Body => AppLocale.isEn
+      ? 'Everyone puts one finger on the screen at the same time. 2–5 players.'
+      : 'Каждый кладёт один палец на экран одновременно. От 2 до 5 игроков.';
+  static String get howToPlayStep3Title =>
+      AppLocale.isEn ? 'Hold and wait' : 'Держите и ждите';
+  static String get howToPlayStep3Body => AppLocale.isEn
+      ? 'The neon circle picks one player at random — they get the task.'
+      : 'Неоновый круг случайно выбирает одного — этот человек выполняет задание.';
+  static String get gotIt => AppLocale.isEn ? 'Got it' : 'Понятно';
 
   // Task input
   static String get customTaskTitle =>

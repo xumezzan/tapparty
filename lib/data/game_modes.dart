@@ -32,7 +32,8 @@ const List<GameMode> gameModes = <GameMode>[
     subtitleEn: 'A random player pays for the group — just place your fingers and find out who.',
     accentColor: AppTheme.pink,
     icon: Icons.payments_rounded,
-
+    badgeText: '12 сценариев',
+    badgeTextEn: '12 scenarios',
     examples: <String>[
       'Кто-то платит за кофе.',
       'Кто-то заказывает всем мороженое.',
@@ -67,7 +68,7 @@ const List<GameMode> gameModes = <GameMode>[
   ),
   GameMode(
     id: 'custom_task',
-    title: 'Custom task',
+    title: 'Своё задание',
     titleEn: 'Custom task',
     subtitle: 'Ручной режим. Ты сам задаёшь правило, если нужен свой сценарий.',
     subtitleEn: 'Manual mode. Set your own rule for a custom scenario.',
